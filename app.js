@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const Signup = require("./routes/signup");
 const Dashboard = require("./routes/dashboard");
+const Login = require("./routes/login")
 const multer = require("multer");
 var dateFormat = require("dateformat");
 
@@ -11,12 +12,15 @@ const formettedDate = dateForm(); //formats current date using self published pa
 console.log(formettedDate);
 
 //var upload = multer({ dest: "uploads/" }); //folder to store image
+const cors = require('cors');
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 app.use("/signup", Signup);
 app.use("/dashboard", Dashboard);
+app.use("/login", Login);
 
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {

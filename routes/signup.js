@@ -2,6 +2,7 @@ const express = require("express");
 const UserSchema = require("../model/userinfo");
 const bcrypt = require("bcryptjs");
 var dateFormat = require("dateformat");
+const verifyToken = require('../commonfunction/tokenVerification');
 
 const router = express.Router();
 //importing crud defined function file
@@ -13,7 +14,7 @@ const {
   read
 } = require("../commonfunction/function");
 
-router.get("/get", async (req, res) => {
+router.get("/get",verifyToken, async (req, res) => {
   try {
     console.log("here");
 
@@ -56,6 +57,16 @@ router.post("/create", async (req, res) => {
     // const createdUser = await newUser.save();
     const { name, username, password, address, phoneno } = req.body; //deconstruct
 
+    const usercheck = await UserSchema.findOne({username});
+    console.log(usercheck);
+    if(usercheck)
+    {
+      console.log("useer exist");
+      res.status(200).json({ msg: "Username already Exists !!!  Sign up Unsuccessful" });
+    }
+    else{
+    console.log("user can be created");    
+
     const hashedPwdValue = await bcrypt.hash(password, 10);
     console.log(hashedPwdValue);
 
@@ -83,7 +94,7 @@ router.post("/create", async (req, res) => {
     } else {
       res.status(400).json({ msg: "could not create data " });
     }
-  } catch (err) {
+  }} catch (err) {
     res.status(400).json({ msg: "failed to create" + err.message });
   }
 });
