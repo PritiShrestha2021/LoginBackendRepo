@@ -1,6 +1,7 @@
 const express = require("express");
 const DashboardSchema = require("../model/dashboardinfo");
 const Upload = require("../commonfunction/fileUpload");
+const ImageSchema = require("../model/image");
 
 const router = express.Router();
 
@@ -30,7 +31,7 @@ router.post("/create", upload.single("imagepath"), async (req, res) => {
     title,
     description,
     user,
-    imagepath: req.file.path
+    imagepath: req.file.path,
   };
 
   try {
@@ -40,6 +41,21 @@ router.post("/create", upload.single("imagepath"), async (req, res) => {
       res
         .status(200)
         .json({ user: createData + "DashBoard created succesfully" });
+    } else {
+      res.status(400).json({ msg: "Could not create data " });
+    }
+  } catch (err) {
+    res.status(400).json({ msg: "Failed to create" + err.message });
+  }
+});
+
+//to upload image
+router.post("/uploadimage", upload.single("imagepath"), async (req, res) => {
+  console.log(req.file);
+  try {
+    const createData = await create(ImageSchema, { imagepath: req.file.path });
+    if (createData) {
+      res.json({ msg: "Image Upload Successfully" });
     } else {
       res.status(400).json({ msg: "Could not create data " });
     }

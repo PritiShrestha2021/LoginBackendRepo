@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const Signup = require("./routes/signup");
 const Dashboard = require("./routes/dashboard");
-const Login = require("./routes/login")
+const Login = require("./routes/login");
 const multer = require("multer");
 var dateFormat = require("dateformat");
 
@@ -12,7 +12,7 @@ const formettedDate = dateForm(); //formats current date using self published pa
 console.log(formettedDate);
 
 //var upload = multer({ dest: "uploads/" }); //folder to store image
-const cors = require('cors');
+const cors = require("cors");
 
 const app = express();
 app.use(express.json());
@@ -23,12 +23,12 @@ app.use("/dashboard", Dashboard);
 app.use("/login", Login);
 
 const storage = multer.diskStorage({
-  destination: function(req, file, cb) {
+  destination: function (req, file, cb) {
     cb(null, "./images");
   },
-  filename: function(req, file, cb) {
+  filename: function (req, file, cb) {
     cb(null, Date.now() + file.originalname);
-  }
+  },
 });
 
 var upload = multer({ storage: storage });
@@ -69,9 +69,10 @@ mongoose.connect(
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true,
-    useFindAndModify: false
+    useFindAndModify: false,
+    //autoIndex: true, //make this also true
   },
-  err => {
+  (err) => {
     if (err) {
       console.log("Error while connecting to database: ", err.message);
     } else {

@@ -2,7 +2,7 @@ const express = require("express");
 const UserSchema = require("../model/userinfo");
 const bcrypt = require("bcryptjs");
 var dateFormat = require("dateformat");
-const verifyToken = require('../commonfunction/tokenVerification');
+const verifyToken = require("../commonfunction/tokenVerification");
 
 const router = express.Router();
 //importing crud defined function file
@@ -11,10 +11,10 @@ const {
   create,
   update,
   erase,
-  read
+  read,
 } = require("../commonfunction/function");
 
-router.get("/get",verifyToken, async (req, res) => {
+router.get("/get", async (req, res) => {
   try {
     console.log("here");
 
@@ -55,51 +55,49 @@ router.post("/create", async (req, res) => {
   try {
     // const newUser = new UserSchema(req.body);
     // const createdUser = await newUser.save();
-    const { name, username, password, address, phoneno } = req.body; //deconstruct
+    const { password } = req.body; //deconstruct
 
-    const usercheck = await UserSchema.findOne({username});
-    console.log(usercheck);
-    if(usercheck)
-    {
-      console.log("useer exist");
-      res.status(200).json({ msg: "Username already Exists !!!  Sign up Unsuccessful" });
-    }
-    else{
-    console.log("user can be created");    
+    //check unique user or not
 
     const hashedPwdValue = await bcrypt.hash(password, 10);
-    console.log(hashedPwdValue);
 
     req.body.password = hashedPwdValue;
-    console.log(hashedPwdValue);
+    // console.log(hashedPwdValue);
 
-    const currentdate = Date.now(); // to store the signup date & time of user
-    console.log(currentdate);
-    const newDate = new Date(currentdate);
-    console.log(newDate);
+    // const currentdate = Date.now(); // to store the signup date & time of user
+    // console.log(currentdate);
+    // const newDate = new Date(currentdate);
+    // console.log(newDate);
 
-    const tempObj = {
-      name,
-      username,
-      password: hashedPwdValue,
-      address,
-      phoneno
-      //signupdate: currentdate,
-    };
+    // const tempObj = {
+    //   name,
+    //   username,
+    //   password: hashedPwdValue,
+    //   address,
+    //   phoneno,
+    //   //signupdate: currentdate,
+    // };
 
-    const createData = await create(UserSchema, tempObj);
-    console.log({ user: createData });
-    if (createData) {
-      res.status(200).json({ user: createData + "User created succesfully" });
+    const createData = await create(UserSchema, req.body);
+    console.log(createData, "usercheck");
+    if (createData.createdUser) {
+      res
+        .status(200)
+        .json({ user: createData, msg: "User created succesfully" });
+      return;
     } else {
-      res.status(400).json({ msg: "could not create data " });
+      if (createData.error.code === 11000) {
+        return res.json({ msg: "user already exists !" });
+      }
+      res.json({ msg: "could not create data " });
     }
-  }} catch (err) {
+  } catch (err) {
+    console.log(err, "error catch");
     res.status(400).json({ msg: "failed to create" + err.message });
   }
 });
 
-router.patch("/update/:id", async (req, res) => {
+router.patch("/update/:id", verifyToken, async (req, res) => {
   try {
     const newbody = req.body;
 
@@ -121,7 +119,7 @@ router.patch("/update/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", verifyToken, async (req, res) => {
   try {
     const id = req.params.id;
     console.log("id:", id);

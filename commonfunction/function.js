@@ -1,4 +1,4 @@
-const get = async User => {
+const get = async (User) => {
   try {
     console.log("inside get function");
     const getAllUsers = await User.find().populate("user");
@@ -10,12 +10,13 @@ const get = async User => {
 
 const create = async (User, param) => {
   try {
-    console.log("inside create function");
+    console.log("inside create function", param);
     const newUser = new User(param);
     const createdUser = await newUser.save();
-    return createdUser;
+    return { createdUser: createdUser };
   } catch (error) {
-    return {};
+    console.log(error, "error");
+    return { error: error };
   }
 };
 
@@ -37,7 +38,7 @@ const erase = async (User, id) => {
   try {
     console.log("inside erase function");
     const eraseData = await User.findByIdAndDelete({
-      _id: id
+      _id: id,
     });
     return eraseData;
   } catch (error) {
