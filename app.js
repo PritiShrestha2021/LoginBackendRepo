@@ -18,6 +18,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+app.use("/profile", express.static('images')); // Allows server to access data inside images folder
 app.use("/signup", Signup);
 app.use("/dashboard", Dashboard);
 app.use("/login", Login);
@@ -56,7 +57,6 @@ app.get("/get", async (req, res) => {
 //image upload starts
 app.post("/demo", upload.single("image"), (req, res) => {
   console.log(req.body);
-  console.log(req.file);
 });
 //image upload ends
 

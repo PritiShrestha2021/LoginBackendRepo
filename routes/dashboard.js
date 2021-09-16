@@ -24,7 +24,6 @@ router.get("/get", async (req, res) => {
 var upload = Upload.FileUpload();
 router.post("/create", upload.single("imagepath"), async (req, res) => {
   console.log(req.file);
-
   const { title, description, user } = req.body;
 
   const data = {
@@ -52,10 +51,12 @@ router.post("/create", upload.single("imagepath"), async (req, res) => {
 //to upload image
 router.post("/uploadimage", upload.single("imagepath"), async (req, res) => {
   console.log(req.file);
+  console.log('abc');
+  console.log(`http://localhost:3001/profile/${req.file.filename}`)
   try {
-    const createData = await create(ImageSchema, { imagepath: req.file.path });
+    const createData = await create(ImageSchema, { imagepath: `http://localhost:3001/profile/${req.file.filename}`});
     if (createData) {
-      res.json({ msg: "Image Upload Successfully" });
+      res.status(200).json({ success: true,  msg: "Image Upload Successfully", createData});
     } else {
       res.status(400).json({ msg: "Could not create data " });
     }
